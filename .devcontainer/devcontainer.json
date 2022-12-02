@@ -1,0 +1,49 @@
+{
+    // Devcontainer version : advent
+    "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_${localEnv:USER}_${containerWorkspaceFolderBasename}",
+    "postAttachCommand": "python advent.py",
+    "shutdownAction": "none",
+    "overrideCommand": false,
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".",
+        "args": {
+            "IMAGENAME": "dvc_${localEnv:USER}_${containerWorkspaceFolderBasename}",
+            "USERNAME": "${localEnv:USER}"
+        }
+    },
+    "runArgs": [
+        "--rm",
+        "--name=${localEnv:USER}_${containerWorkspaceFolderBasename}"
+    ],
+    "extensions": [
+        // use "ms-python.python" or "ms-python.python@prerelease" depending on your vscode version (some bugs exists depending on vscode versions)
+        // This works on VSCode 1.73.1 : releases and latest prereleases were failing
+        "ms-python.python@2022.19.13201008",
+        "ms-toolsai.jupyter@2022.11.1003241024" // also had to specify specific jupyter version 
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.envFile": "",
+        "python.formatting.provider": "black",
+        "python.formatting.blackArgs": [
+            "--config=.devcontainer/pyproject.toml"
+        ],
+        "editor.formatOnSave": true,
+        "isort.args": [
+            "--settings-file=.devcontainer/pyproject.toml"
+        ],
+        "[python]": {
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": true
+            }
+        }
+    },
+    // give access to host files
+    "mounts": [
+        // Setup home directory
+        "type=bind,source=${localEnv:HOME},target=/home/${localEnv:USER}/hosthome",
+        // Share bash_history from host and containers
+        "type=bind,source=${localEnv:HOME}/.bash_history,target=/home/${localEnv:USER}/.bash_history"
+    ]
+}
