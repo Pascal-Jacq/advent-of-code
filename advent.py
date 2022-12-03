@@ -47,6 +47,24 @@ def get_year():
     return datetime.date.today().year
 
 
+def display_leaderboard(leaderboard):
+    owner_id = leaderboard["owner_id"]
+    owner = leaderboard["members"][str(owner_id)]
+    owner_name = owner['name'] or f'#{owner["id"]}'
+    print(f"Leaderboard - {owner_name}")
+    for idx, (stars, _, name) in enumerate(
+        sorted(
+            [
+                (member["stars"], member['last_star_ts'], member['name'] or f'#{member["id"]}#')
+                for member in leaderboard["members"].values()
+            ],
+            key=lambda x: (x[0], -x[1]),
+            reverse=True,
+        )
+    ):
+        print(f"{idx:4d} - {stars:02d}* {name}")
+
+
 class Advent:
     def __init__(self, day=None, year=2022):
         self.day = day or get_today()
@@ -103,6 +121,24 @@ class Advent:
             page = requests.get(f"{self.url}/input", cookies=self.cookies)
             file.write_text(page.text)
         return file.read_text()
+
+    def get_private_leaderboards(self):
+        page = requests.get(f"{self.base_url}/leaderboard/private", cookies=self.cookies)
+        root = extract.extract_html(page.text)
+        private_boards = root.xpath('//article//a/@href')
+        self.leaderboards = [requests.get(f"{URL}/{url}.json", cookies=self.cookies).json() for url in private_boards]
+        return self.leaderboards
+
+    def display_leaderboards(self):
+        for leaderboard in self.get_private_leaderboards():
+            display_leaderboard(leaderboard)
+            print()
+
+    def display_personal_stats(self):
+        r = requests.get(f"{self.base_url}/leaderboard/self", cookies=self.cookies)
+        root = extract.extract_html(r.text)
+        stats = root.xpath('//article/pre')[0]
+        print(stats.text_content())
 
 
 def generate_notebook(day, year):
