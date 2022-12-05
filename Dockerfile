@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Just need ps to handle container lifetime
-RUN apt-get update && apt-get install -y procps --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y procps ssh wget curl git --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
