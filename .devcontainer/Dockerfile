@@ -13,8 +13,5 @@ RUN useradd -l -m ${USERNAME} --shell /bin/bash
 USER ${USERNAME}
 ENV USER=${USERNAME}
 
-COPY entrypoint.sh bash_aliases /install/
 RUN cp /install/bash_aliases /home/${USERNAME}/.bash_aliases &&\
     chown ${USERNAME} /home/${USERNAME}/.bash_aliases
-
-CMD ["/install/entrypoint.sh"]

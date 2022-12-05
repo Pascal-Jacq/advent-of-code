@@ -2,8 +2,6 @@
     // Devcontainer version : advent
     "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_${localEnv:USER}_${containerWorkspaceFolderBasename}",
     "postAttachCommand": "python advent.py",
-    "shutdownAction": "none",
-    "overrideCommand": false,
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".",
@@ -19,9 +17,8 @@
     "extensions": [
         // use "ms-python.python" or "ms-python.python@prerelease" depending on your vscode version (some bugs exists depending on vscode versions)
         // This works on VSCode 1.73.1 : releases and latest prereleases were failing
-        "ms-python.python@2022.19.13201008",
-        "ms-toolsai.jupyter@2022.11.1003241024" // also had to specify specific jupyter version 
-    ],
+        "ms-python.python"
+   ],
     "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.envFile": "",
