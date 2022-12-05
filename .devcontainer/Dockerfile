@@ -2,11 +2,11 @@ ARG IMAGENAME
 FROM $IMAGENAME
 
 # Add dev additional modules
-COPY requirements.txt /install/
+COPY requirements.txt bash_aliases /install/
 RUN pip install -r /install/requirements.txt \
     && rm /install/requirements.txt
 
-ARG USERNAME
+ARG USERNAME=codespace
 # Add the local user and act as him (i.e you) when in container
 RUN useradd -l -m ${USERNAME} --shell /bin/bash
 

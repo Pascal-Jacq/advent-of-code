@@ -1,25 +1,24 @@
 {
     // Devcontainer version : advent
-    "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_pascal.jacq_${containerWorkspaceFolderBasename}",
+    "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_codespace_${containerWorkspaceFolderBasename}",
     "postAttachCommand": "python advent.py",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".",
         "args": {
-            "IMAGENAME": "dvc_pascal.jacq_${containerWorkspaceFolderBasename}",
-            "USERNAME": "pascal.jacq"
+            "IMAGENAME": "dvc_codespace_${containerWorkspaceFolderBasename}",
+            "USERNAME": "codespace"
         }
     },
     "runArgs": [
         "--rm",
-        "--name=pascal.jacq_${containerWorkspaceFolderBasename}"
+        "--name=codespace_${containerWorkspaceFolderBasename}"
     ],
     "extensions": [
-        // use "ms-python.python" or "ms-python.python@prerelease" depending on your vscode version (some bugs exists depending on vscode versions)
-        // This works on VSCode 1.73.1 : releases and latest prereleases were failing
         "ms-python.python"
    ],
     "settings": {
+        "git.path": "/usr/bin/git",
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.envFile": "",
         "python.formatting.provider": "black",
