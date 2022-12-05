@@ -2,6 +2,8 @@
 My setup to quickly hack my way through the daily advent of code problem
 
 # Install 
+If you want to use codespace : Just click "code" button and go!
+
 If you are using Visual Studio Code : Install the dev container extension, then run "Rebuild and Reopen in container"
 
 If you are using python : pip install -r requirements.txt
@@ -13,3 +15,6 @@ From inside the dev container just type : "go" or : "go {day} {year}"
 
 From a terminal type : "python advent.py" or "python advent.py {day} {year}"
 Then open the generated notebook using your jupyter notebook/lab/hub
+
+# Configuration
+You have to retrien your session cookie and create a session.json file with the cookie
