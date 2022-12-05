@@ -1,18 +1,18 @@
 {
     // Devcontainer version : advent
-    "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_${localEnv:USER}_${containerWorkspaceFolderBasename}",
+    "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_pascal.jacq_${containerWorkspaceFolderBasename}",
     "postAttachCommand": "python advent.py",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".",
         "args": {
-            "IMAGENAME": "dvc_${localEnv:USER}_${containerWorkspaceFolderBasename}",
-            "USERNAME": "${localEnv:USER}"
+            "IMAGENAME": "dvc_pascal.jacq_${containerWorkspaceFolderBasename}",
+            "USERNAME": "pascal.jacq"
         }
     },
     "runArgs": [
         "--rm",
-        "--name=${localEnv:USER}_${containerWorkspaceFolderBasename}"
+        "--name=pascal.jacq_${containerWorkspaceFolderBasename}"
     ],
     "extensions": [
         // use "ms-python.python" or "ms-python.python@prerelease" depending on your vscode version (some bugs exists depending on vscode versions)
@@ -35,12 +35,5 @@
                 "source.organizeImports": true
             }
         }
-    },
-    // give access to host files
-    "mounts": [
-        // Setup home directory
-        "type=bind,source=${localEnv:HOME},target=/home/${localEnv:USER}/hosthome",
-        // Share bash_history from host and containers
-        "type=bind,source=${localEnv:HOME}/.bash_history,target=/home/${localEnv:USER}/.bash_history"
-    ]
+    }
 }
