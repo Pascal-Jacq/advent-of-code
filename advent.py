@@ -52,7 +52,7 @@ def display_leaderboard(leaderboard):
     owner = leaderboard["members"][str(owner_id)]
     owner_name = owner['name'] or f'#{owner["id"]}'
     print(f"Leaderboard - {owner_name}")
-    for idx, (stars, _, name) in enumerate(
+    for idx, (stars, last_star, name) in enumerate(
         sorted(
             [
                 (member["stars"], member['last_star_ts'], member['name'] or f'#{member["id"]}#')
@@ -60,9 +60,10 @@ def display_leaderboard(leaderboard):
             ],
             key=lambda x: (x[0], -x[1]),
             reverse=True,
-        )
+        ),
+        start=1,
     ):
-        print(f"{idx:4d} - {stars:02d}* {name}")
+        print(f"{idx:4d} - {stars:02d}* {name:30} @ {datetime.datetime.fromtimestamp(last_star)}")
 
 
 class Advent:
