@@ -1,5 +1,5 @@
 .devcontainer
 data/
-*_notebook.ipynb
+problems/
 .git/
 __pycache__

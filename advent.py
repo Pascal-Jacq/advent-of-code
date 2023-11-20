@@ -20,7 +20,7 @@ ensure_data_path()
 
 
 def load_cookies():
-    filename = "session.json"
+    filename = "../session.json"
     try:
         cookies = json.load(open(filename))
     except FileNotFoundError:
@@ -40,7 +40,12 @@ It should look like :
 
 
 def get_today():
-    return datetime.date.today().day
+    today = datetime.date.today()
+    if today.month != 12 or today.day > 25:
+        raise RuntimeError(
+            "We are not on an advent day so I can not open todays problem! You have to specify a year and day using CLI"
+        )
+    return today.day
 
 
 def get_year():
@@ -50,12 +55,16 @@ def get_year():
 def display_leaderboard(leaderboard):
     owner_id = leaderboard["owner_id"]
     owner = leaderboard["members"][str(owner_id)]
-    owner_name = owner['name'] or f'#{owner["id"]}'
+    owner_name = owner["name"] or f'#{owner["id"]}'
     print(f"Leaderboard - {owner_name}")
     for idx, (stars, last_star, name) in enumerate(
         sorted(
             [
-                (member["stars"], member['last_star_ts'], member['name'] or f'#{member["id"]}#')
+                (
+                    member["stars"],
+                    member["last_star_ts"],
+                    member["name"] or f'#{member["id"]}#',
+                )
                 for member in leaderboard["members"].values()
             ],
             key=lambda x: (x[0], -x[1]),
@@ -63,7 +72,9 @@ def display_leaderboard(leaderboard):
         ),
         start=1,
     ):
-        print(f"{idx:4d} - {stars:02d}* {name:30} @ {datetime.datetime.fromtimestamp(last_star)}")
+        print(
+            f"{idx:4d} - {stars:02d}* {name:30} @ {datetime.datetime.fromtimestamp(last_star)}"
+        )
 
 
 class Advent:
@@ -91,7 +102,9 @@ class Advent:
 
     def process_extract(self, page):
         if page.status_code != 200:
-            raise RuntimeError(f"Error getting {page.url} : got status {page.status_code}")
+            raise RuntimeError(
+                f"Error getting {page.url} : got status {page.status_code}"
+            )
         self.contents, self.extract = extract.extract_content(page)
         return self.contents
 
@@ -103,7 +116,7 @@ class Advent:
         if "success" in self.contents:
             display_html(self.contents["success"], raw=True)
         content = self.contents["content"]
-        key = idx or self.contents["position"]
+        key = self.contents["position"] if idx is None else idx
         display_html(content[key], raw=True)
 
     def post(self, answer):
@@ -111,23 +124,31 @@ class Advent:
         if self.level == -1:
             return {}
         payload["answer"] = answer
-        self.page = requests.post(f"{self.url}/answer", cookies=self.cookies, data=payload)
+        self.page = requests.post(
+            f"{self.url}/answer", cookies=self.cookies, data=payload
+        )
         return self.process_extract(self.page)
 
     @property
     def input(self):
-        input_name = f"data/{self.year:04}_{self.day:02}_input"
-        file = Path(input_name)
+        data_path = Path("data/")
+        input_name = f"{self.year:04}_{self.day:02}_input"
+        file = data_path / Path(input_name)
         if not file.exists():
             page = requests.get(f"{self.url}/input", cookies=self.cookies)
             file.write_text(page.text)
         return file.read_text()
 
     def get_private_leaderboards(self):
-        page = requests.get(f"{self.base_url}/leaderboard/private", cookies=self.cookies)
+        page = requests.get(
+            f"{self.base_url}/leaderboard/private", cookies=self.cookies
+        )
         root = extract.extract_html(page.text)
-        private_boards = root.xpath('//article//a/@href')
-        self.leaderboards = [requests.get(f"{URL}/{url}.json", cookies=self.cookies).json() for url in private_boards]
+        private_boards = root.xpath("//article//a/@href")
+        self.leaderboards = [
+            requests.get(f"{URL}{url}.json", cookies=self.cookies).json()
+            for url in private_boards
+        ]
         return self.leaderboards
 
     def display_leaderboards(self):
@@ -138,15 +159,20 @@ class Advent:
     def display_personal_stats(self):
         r = requests.get(f"{self.base_url}/leaderboard/self", cookies=self.cookies)
         root = extract.extract_html(r.text)
-        stats = root.xpath('//article/pre')[0]
+        stats = root.xpath("//article/pre")[0]
         print(stats.text_content())
 
 
 def generate_notebook(day, year):
-    notebook_file = Path(f"{year:04}_{day:02}_notebook.ipynb")
+    problems = Path("problems")
+    problems.mkdir(exist_ok=True)
+    notebook_file = problems / Path(f"{year:04}_{day:02}_notebook.ipynb")
     if not notebook_file.exists():
-        notebook = Path("template.ipynb").read_text()
-        notebook = notebook.replace("api = Advent()", f"api = Advent(year={year}, day={day})")
+        thispath = Path(__file__).parent.resolve()
+        notebook = (thispath / Path("template.ipynb")).read_text()
+        notebook = notebook.replace(
+            "api = Advent()", f"api = Advent(year={year}, day={day})"
+        )
         notebook_file.write_text(notebook)
     return notebook_file
 

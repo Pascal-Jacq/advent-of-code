@@ -1,6 +1,5 @@
 # Local mess
-data/
-*_notebook.ipynb
+problems/
 __pycache__
 session.json
 

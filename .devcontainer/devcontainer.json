@@ -1,7 +1,7 @@
 {
     // Devcontainer version : advent
     "initializeCommand": "bash .devcontainer/generate_dockerfile.sh dvc_codespace_${containerWorkspaceFolderBasename}",
-    "postAttachCommand": "python advent.py",
+    "postAttachCommand": "mkdir -p problems && cd problems && python -m advent",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".",
@@ -14,24 +14,15 @@
         "--rm",
         "--name=codespace_${containerWorkspaceFolderBasename}"
     ],
-    "extensions": [
-        "ms-python.python"
-   ],
-    "settings": {
-        "git.path": "/usr/bin/git",
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.envFile": "",
-        "python.formatting.provider": "black",
-        "python.formatting.blackArgs": [
-            "--config=.devcontainer/pyproject.toml"
-        ],
-        "editor.formatOnSave": true,
-        "isort.args": [
-            "--settings-file=.devcontainer/pyproject.toml"
-        ],
-        "[python]": {
-            "editor.codeActionsOnSave": {
-                "source.organizeImports": true
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-toolsai.jupyter",
+                "ms-python.python"
+            ],
+            "settings": {
+                "terminal.integrated.localEchoLatencyThreshold": -1,
+                "extensions.ignoreRecommendations": true
             }
         }
     }
