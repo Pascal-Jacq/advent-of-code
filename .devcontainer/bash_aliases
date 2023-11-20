@@ -1,1 +1,1 @@
-alias go="python advent.py"
+alias go="python -m advent"

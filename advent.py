@@ -11,12 +11,9 @@ URL = "https://adventofcode.com"
 
 
 def ensure_data_path():
-    data_path = Path("data")
+    data_path = Path("problems/data")
     if not data_path.exists():
         data_path.mkdir()
-
-
-ensure_data_path()
 
 
 def load_cookies():
@@ -84,6 +81,13 @@ class Advent:
         self.cookies = load_cookies()
         self.base_url = f"{URL}/{year}"
         self.contents = {}
+        self._credentials_verification()
+
+    def _credentials_verification(self):
+        user = requests.get(self.base_url, cookies=self.cookies)
+        root = extract.extract_html(user.text)
+        if not root.xpath("//div[@class='user']"):
+            raise RuntimeError("Could not connect : Invalid credentials provided check your session.json file")
 
     @property
     def success(self):
@@ -164,8 +168,12 @@ class Advent:
 
 
 def generate_notebook(day, year):
+    session = Path("session.json")
+    if not session.exists():
+        raise RuntimeError("Generate a session.json file first (or run this code from the directory containing this file)")
     problems = Path("problems")
     problems.mkdir(exist_ok=True)
+    ensure_data_path()
     notebook_file = problems / Path(f"{year:04}_{day:02}_notebook.ipynb")
     if not notebook_file.exists():
         thispath = Path(__file__).parent.resolve()
