@@ -179,11 +179,57 @@ def generate_notebook(day, year):
         thispath = Path(__file__).parent.resolve()
         notebook = (thispath / Path("template.ipynb")).read_text()
         notebook = notebook.replace(
-            "api = Advent()", f"api = Advent(year={year}, day={day})"
+            " = starter_cell()", f" = starter_cell(year={year}, day={day})"
         )
         notebook_file.write_text(notebook)
     return notebook_file
 
+def starter_cell(year, day):
+    # Create an api object to interact with the website
+    api = Advent(year=year, day=day)
+    api.download_problem()
+
+    # You can not play twice !
+    if api.success:
+        print(100*"-")
+        print(api.contents["success"])
+        print(100*"-")
+        api.display_personal_stats()
+        api.display_leaderboards()
+        raise RuntimeError("You already finished this one")
+
+    # Retrieve your inputs
+    input = api.input
+    lines = input.splitlines()
+
+    # Display first part of the problem
+    api.pretty_display(0)
+    # Show first lines of data
+    print("Head of input file")
+    print(100*"-")
+    print("\n".join(lines[:15]))
+    print(100*"-")
+    return api, input, lines
+
+def level1(api, answer):
+    if api.level == 1: # Do not post the answer if already posted
+        api.post(answer)
+        api.pretty_display()
+        # Retrieve second part of the problem
+        api.download_problem()
+        assert api.level == 2, "Finish level 1 first!"
+    # Show second part of the problem
+    api.pretty_display(idx=1)
+
+def level2(api, answer):
+    api.post(answer)
+    api.pretty_display()
+    # Finally check if you were sucessfull
+    api.download_problem()
+    if not api.success:
+        raise RuntimeError("Go back answering level 2...")
+    api.display_personal_stats()
+    api.display_leaderboards()
 
 if __name__ == "__main__":
     import os
