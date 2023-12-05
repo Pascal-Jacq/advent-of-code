@@ -26,7 +26,12 @@ def extract_content(page):
     position = level - 1 if level < 3 else 0
     articles = root.xpath("//article")
     content = [etree.tostring(article).decode() for article in articles]
-    result = {"content": content, "level": level, "payload": payload, "position": position}
+    result = {
+        "content": content,
+        "level": level,
+        "payload": payload,
+        "position": position,
+    }
     if success:
         result["success"] = success_message
     return result, page.text

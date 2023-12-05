@@ -87,7 +87,9 @@ class Advent:
         user = requests.get(self.base_url, cookies=self.cookies)
         root = extract.extract_html(user.text)
         if not root.xpath("//div[@class='user']"):
-            raise RuntimeError("Could not connect : Invalid credentials provided check your session.json file")
+            raise RuntimeError(
+                "Could not connect : Invalid credentials provided check your session.json file"
+            )
 
     @property
     def success(self):
@@ -170,7 +172,9 @@ class Advent:
 def generate_notebook(day, year):
     session = Path("session.json")
     if not session.exists():
-        raise RuntimeError("Generate a session.json file first (or run this code from the directory containing this file)")
+        raise RuntimeError(
+            "Generate a session.json file first (or run this code from the directory containing this file)"
+        )
     problems = Path("problems")
     problems.mkdir(exist_ok=True)
     ensure_data_path()
@@ -184,6 +188,7 @@ def generate_notebook(day, year):
         notebook_file.write_text(notebook)
     return notebook_file
 
+
 def starter_cell(year, day):
     # Create an api object to interact with the website
     api = Advent(year=year, day=day)
@@ -191,9 +196,9 @@ def starter_cell(year, day):
 
     # You can not play twice !
     if api.success:
-        print(100*"-")
+        print(100 * "-")
         print(api.contents["success"])
-        print(100*"-")
+        print(100 * "-")
         api.display_personal_stats()
         api.display_leaderboards()
         raise RuntimeError("You already finished this one")
@@ -206,13 +211,14 @@ def starter_cell(year, day):
     api.pretty_display(0)
     # Show first lines of data
     print("Head of input file")
-    print(100*"-")
+    print(100 * "-")
     print("\n".join(lines[:15]))
-    print(100*"-")
-    return api, input, lines
+    print(100 * "-")
+    return api, input
+
 
 def level1(api, answer):
-    if api.level == 1: # Do not post the answer if already posted
+    if api.level == 1:  # Do not post the answer if already posted
         api.post(answer)
         api.pretty_display()
         # Retrieve second part of the problem
@@ -220,6 +226,7 @@ def level1(api, answer):
         assert api.level == 2, "Finish level 1 first!"
     # Show second part of the problem
     api.pretty_display(idx=1)
+
 
 def level2(api, answer):
     api.post(answer)
@@ -230,6 +237,7 @@ def level2(api, answer):
         raise RuntimeError("Go back answering level 2...")
     api.display_personal_stats()
     api.display_leaderboards()
+
 
 if __name__ == "__main__":
     import os
