@@ -15,3 +15,5 @@ ENV USER=${USERNAME}
 
 RUN cp /install/bash_aliases /home/${USERNAME}/.bash_aliases &&\
     chown ${USERNAME} /home/${USERNAME}/.bash_aliases
+
+ENV TZ=Europe/Paris
