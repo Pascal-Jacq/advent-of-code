@@ -1,6 +1,0 @@
-requests
-lxml
-ipykernel
-networkx
-numpy
-pandas

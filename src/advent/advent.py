@@ -3,7 +3,7 @@ import datetime
 import json
 from pathlib import Path
 
-import extract
+from .extract import extract_html, extract_content
 import requests
 from IPython.display import display_html
 
@@ -85,7 +85,7 @@ class Advent:
 
     def _credentials_verification(self):
         user = requests.get(self.base_url, cookies=self.cookies)
-        root = extract.extract_html(user.text)
+        root = extract_html(user.text)
         if not root.xpath("//div[@class='user']"):
             raise RuntimeError(
                 "Could not connect : Invalid credentials provided check your session.json file"
@@ -111,7 +111,7 @@ class Advent:
             raise RuntimeError(
                 f"Error getting {page.url} : got status {page.status_code}"
             )
-        self.contents, self.extract = extract.extract_content(page)
+        self.contents, self.extract = extract_content(page)
         return self.contents
 
     def download_problem(self):
@@ -149,8 +149,9 @@ class Advent:
         page = requests.get(
             f"{self.base_url}/leaderboard/private", cookies=self.cookies
         )
-        root = extract.extract_html(page.text)
+        root = extract_html(page.text)
         private_boards = root.xpath("//article//a/@href")
+        private_boards = [url for url in private_boards if "/private/" in url]
         self.leaderboards = [
             requests.get(f"{URL}{url}.json", cookies=self.cookies).json()
             for url in private_boards
@@ -164,7 +165,7 @@ class Advent:
 
     def display_personal_stats(self):
         r = requests.get(f"{self.base_url}/leaderboard/self", cookies=self.cookies)
-        root = extract.extract_html(r.text)
+        root = extract_html(r.text)
         stats = root.xpath("//article/pre")[0]
         print(stats.text_content())
 
@@ -201,7 +202,6 @@ def starter_cell(year, day):
         print(100 * "-")
         api.display_personal_stats()
         api.display_leaderboards()
-        raise RuntimeError("You already finished this one")
 
     # Retrieve your inputs
     input = api.input
